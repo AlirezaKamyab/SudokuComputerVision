@@ -473,6 +473,7 @@ def main():
 
                 key_pressed = cv2.waitKey(20)
                 if key_pressed == ord('q'):
+                    cv2.imwrite('test.jpg', img)
                     break
 
             cap.release()

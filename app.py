@@ -208,7 +208,7 @@ def img_with_lines(img, template_file_name='./template.jpg'):
 
     X1, X2, Y1, Y2 = [], [], [], []
 
-    lines = np.squeeze(lines, 3)
+    lines = np.squeeze(lines, 1)
 
     for line in lines:
         x1, y1, x2, y2 = line
@@ -471,9 +471,8 @@ def main():
                 if ret:
                     cv2.imshow('Camera', new_img)
 
-                key_pressed = cv2.waitKey(20)
+                key_pressed = cv2.waitKey(10)
                 if key_pressed == ord('q'):
-                    cv2.imwrite('test.jpg', img)
                     break
 
             cap.release()

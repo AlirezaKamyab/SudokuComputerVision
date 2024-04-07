@@ -16,7 +16,7 @@ input_index = resnet.get_input_details()[0]['index']
 output_index = resnet.get_output_details()[0]['index']
 
 
-BLOCK_SIZE, C = 33, 5
+BLOCK_SIZE, C = 33, 10
 TEMPLATE_SIZE = (600, 600)
 TEMPLATE_FILENAME = './template.jpg'
 
@@ -121,7 +121,7 @@ def alignSudokuPaper(img):
     corners = get_corners(contours[j])
     corners, to_pts = get_sorted_corners(corners, TEMPLATE_SIZE)
     M = cv2.getPerspectiveTransform(corners, to_pts)
-    new_img = cv2.warpPerspective(img.copy(), M, TEMPLATE_SIZE, flags=cv2.INTER_CUBIC)
+    new_img = cv2.warpPerspective(img.copy(), M, TEMPLATE_SIZE)
     return new_img
 
 
@@ -208,7 +208,7 @@ def img_with_lines(img, template_file_name='./template.jpg'):
 
     X1, X2, Y1, Y2 = [], [], [], []
 
-    lines = np.squeeze(lines, 1)
+    lines = np.squeeze(lines, 3)
 
     for line in lines:
         x1, y1, x2, y2 = line
@@ -217,7 +217,7 @@ def img_with_lines(img, template_file_name='./template.jpg'):
         Y1.append(y1)
         Y2.append(y2)
 
-        cv2.line(new_img, (x1, y1), (x2, y2), (255,), 3)
+        cv2.line(new_img, (x1, y1), (x2, y2), (255,), 1)
 
     return 255 - new_img
 
@@ -299,7 +299,7 @@ def classify_img(retr_img):
 
     _, to_predict = cv2.threshold(to_predict, 200, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     to_predict = cv2.copyMakeBorder(to_predict, 3, 3, 3, 3, cv2.BORDER_CONSTANT, 0)
-    to_predict = cv2.resize(to_predict, (28, 28), interpolation=cv2.INTER_CUBIC)
+    to_predict = cv2.resize(to_predict, (28, 28))
     to_predict = np.reshape(to_predict, (1, 28, 28, 1))
     to_predict = to_predict.astype('float32')
     resnet.set_tensor(input_index, to_predict)
@@ -444,7 +444,6 @@ def solve_sudoku_with_image(sudoku, template_file_name='./template.jpg', margin=
 
 
 def main():
-    global C, BLOCK_SIZE
     while True:
         input_type = input("(1) Open Camera\n(2) Filename\n>> ")
         input_type = '1'
@@ -474,6 +473,7 @@ def main():
 
                 key_pressed = cv2.waitKey(20)
                 if key_pressed == ord('q'):
+                    cv2.imwrite('test.jpg', img)
                     break
 
             cap.release()
